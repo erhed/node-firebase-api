@@ -4,9 +4,11 @@ let async  = require('express-async-await');
 let fetch = require('node-fetch');
 
 
- function putData(name, doc) {
 
-    db.collection(name).doc(doc).set({
+ function putData(collection, currency1, currency2) {
+
+    db.collection(collection).doc(`${currency1}${currency2}`).set({
+
       
     })
     .then(function() {
