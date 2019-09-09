@@ -7,6 +7,7 @@ let fetch = require('node-fetch');
 
 function postDataToFirebase(currency1, currency2){
 
+    
 }
 
 async function getDataFromApi(currency1, currency2) {
