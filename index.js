@@ -8,19 +8,24 @@ var app = firebase.initializeApp();
 
 function getDataFromFirebase(currency1, currency2) {
 
-    var url = `https://console.firebase.google.com/project/currency-api-3c271/database/firestore/data~2F`
-
-
-    return fetch(url, { "method": "GET", }).then((result) => {
-        return result.body;
-    }).catch((err) => {
-        console.log(err);
-    });
+    let fireBaseData = db.collection(collection).doc(`${currency1}${currency2}`);
+    let getDoc = fireBaseData.get()
+        .then(doc => {
+            if (!doc.exists) {
+                console.log('No currency');
+            } else {
+                console.log('Document data:', doc.data());
+            }
+        }).catch(err => {
+            console.log('Error getting currency', err);
+        });
 }
 
 app.listen(3000, function () {
     console.log('Running on port 3000');
 })
+
+db.collection(collection).doc(`${currency1}${currency2}`);
 
 var firebaseConfig = {
     apiKey: "AIzaSyCMxK2gLdb7KFtBuAc_T1OAAadutg-YQY0",
