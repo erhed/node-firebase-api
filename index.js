@@ -5,7 +5,7 @@ let fetch = require('node-fetch');
 
 
 
-function postDataToFirebase(currency1, currency2){
+function postDataToFirebase(currency1, currency2, json){
 
     // Add a new document in collection "cities"
 db.collection(collection).doc(`${currency1}${currency2}`).set({
