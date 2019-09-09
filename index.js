@@ -7,7 +7,19 @@ let fetch = require('node-fetch');
 
 function postDataToFirebase(currency1, currency2){
 
-    
+    // Add a new document in collection "cities"
+db.collection(collection).doc(`${currency1}${currency2}`).set({
+    // name: "Los Angeles",
+    // state: "CA",
+    // country: "USA"
+})
+.then(function() {
+    console.log("Document successfully written!");
+})
+.catch(function(error) {
+    console.error("Error writing document: ", error);
+});
+
 }
 
 async function getDataFromApi(currency1, currency2) {
