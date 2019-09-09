@@ -3,20 +3,23 @@ let app = express();
 let async = require('express-async-await');
 let fetch = require('node-fetch');
 
-function getDataFromApi(currency1, currency2) {
+
+
+function postDataToFirebase(currency1, currency2){
+
+}
+
+async function getDataFromApi(currency1, currency2) {
 
     var url = `https://api.exchangeratesapi.io/latest?base=${currency1}&symbols=${currency2}`;
 
-    fetch(url, { "method": "GET", }).then((result) => {
-        console.log(result)
-    }).catch((err) => {
+    return fetch(url, { "method": "GET", }).then((result) => {
+        return result.json();
+    }).then(resultJson => {
+        return resultJson;
+    })
+    .catch((err) => {
         console.log(err)
     });
 }
 
-getDataFromApi("USD", "SEK");
-
-
-app.get('/', function (req, res) {
-    return res.send('hejhej');
-});
