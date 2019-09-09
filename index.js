@@ -2,27 +2,8 @@ let express = require("express");
 let app = express();
 let async  = require('express-async-await');
 let fetch = require('node-fetch');
-
-
-
-
-
-
-
-
-
-
-// HAHDAUDFHW
-
-
-
-// <!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/6.6.0/firebase-app.js"></script>
-
-// <!-- TODO: Add SDKs for Firebase products that you want to use
-    //  https://firebase.google.com/docs/web/setup#config-web-app -->
-  /* // Your web app's Firebase configuration */
-  {/* // Initialize Firebase */}
+var firebase = require('firebase');
+var app = firebase.initializeApp();
 
 
 
