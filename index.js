@@ -25,7 +25,8 @@ const collection = "CurrencyPrices";
 function putData(currency1, currency2, json) {
 
     db.collection(collection).doc(`${currency1}${currency2}`).set({
-        json: json
+        json: json,
+        date: getDate()
     })
         .then(function () {
             console.log("Document successfully written!");
@@ -33,23 +34,39 @@ function putData(currency1, currency2, json) {
         .catch(function (error) {
             console.error("Error writing document: ", error);
         });
+}
+
+async function getDataFromFirebase(currency1, currency2) {
+    return new Promise((resolve, reject) => {
+        let fireBaseData = db.collection(collection).doc(`${currency1}${currency2}`);
+        let getDoc = fireBaseData.get()
+            .then(doc => {
+                if (!doc.exists) {
+                    reject("error");
+                } else {
+                    resolve(doc.data());
+                }
+            }).catch(err => {
+                reject(err);
+            });
+    });
+}
+function getDate() {
+    let date = new Date();
+    let day = date.getDate();
+    if (day < 10) {
+        day = "0" + day;
+    }
+    let month = date.getMonth() + 1;
+    if (month < 10) {
+        month = "0" + month;
+    }
+    let year = date.getFullYear();
+    return year + "-" + month + "-" + day;
 
 }
 
-function getDataFromFirebase(currency1, currency2) {
 
-    let fireBaseData = db.collection(collection).doc(`${currency1}${currency2}`);
-    let getDoc = fireBaseData.get()
-        .then(doc => {
-            if (!doc.exists) {
-                console.log('No currency');
-            } else {
-                console.log('Document data:', doc.data());
-            }
-        }).catch(err => {
-            console.log('Error getting currency', err);
-        });
-}
 
 function deleteData(currency1, currency2) {
     db.collection(collection).doc(`${currency1}${currency2}`).delete().then(function () {
@@ -63,7 +80,8 @@ function postDataToFirebase(currency1, currency2, json) {
 
     // Add a new document in collection "cities"
     db.collection(collection).doc(`${currency1}${currency2}`).set({
-        json: json
+        json: json,
+        date: getDate()
     })
         .then(function () {
             console.log("Document successfully written!");
@@ -89,10 +107,17 @@ async function getDataFromApi(currency1, currency2) {
         });
 }
 
-app.post('/POST', async function (req, res) {
-    let json = await getDataFromApi("USD", "JPY");
-    console.log(json);
+app.get('/', async function (req, res) {
+    // let json = await getDataFromApi("USD", "JPY");
+    // console.log(json);
 
+    // postDataToFirebase("USD", "SEK", "Hello");
+    // let data = await getDataFromFirebase("USD", "SEK").then(resp =>{
+    await getDataFromFirebase("USD", "SEK").then(resp => {
+        console.log(resp);
+    });
+    // });
+    // console.log(data);
     //postDataToFirebase("USD","JPY", JSON.stringify(json));
     //deleteData("USD", "JPY");
     //getDataFromFirebase("USD", "SEK");
@@ -100,6 +125,23 @@ app.post('/POST', async function (req, res) {
 
     res.status(200).send("lol");
 });
+
+// app.get('/:currencyPair',(request, response) => {
+
+//     let currencyPair = req.params.currenyPair;
+//     let currency1 = currencyPair.slice(0, 3);
+//     let currency2 = currencyPair.slice(3, 6);
+//     let firebaseResponse = getDataFromFirebase(currency1, currency2);
+
+//     if (firebaseResponse == null) {
+//         getDataFromApi(currency1, currency2);
+//     }
+//     // if (doc.exists) {
+//     //     getDataFromFirebase();
+//     // } else {
+//     //     getDataFromApi();
+//     // }
+// })
 
 app.listen(3000, function () {
     console.log('Running on port 3000');
