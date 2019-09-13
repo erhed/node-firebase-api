@@ -22,10 +22,10 @@ const collection = "CurrencyPrices";
 
 // Functions
 
-function putData(collection, currency1, currency2) {
+function putData(currency1, currency2, json) {
 
     db.collection(collection).doc(`${currency1}${currency2}`).set({
-
+        json: json
     })
         .then(function () {
             console.log("Document successfully written!");
@@ -89,11 +89,14 @@ async function getDataFromApi(currency1, currency2) {
         });
 }
 
-app.post('/POST', async function(req, res) {
+app.post('/POST', async function (req, res) {
     let json = await getDataFromApi("USD", "JPY");
     console.log(json);
 
-    postDataToFirebase("USD","JPY", JSON.stringify(json));
+    //postDataToFirebase("USD","JPY", JSON.stringify(json));
+    //deleteData("USD", "JPY");
+    //getDataFromFirebase("USD", "SEK");
+    //putData("USD","SEK","prutt");
 
     res.status(200).send("lol");
 });
