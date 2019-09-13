@@ -42,7 +42,7 @@ async function getDataFromFirebase(currency1, currency2) {
         let getDoc = fireBaseData.get()
             .then(doc => {
                 if (!doc.exists) {
-                    reject("error");
+                    resolve("No Document exists");
                 } else {
                     resolve(doc.data());
                 }
@@ -94,54 +94,45 @@ function postDataToFirebase(currency1, currency2, json) {
 
 async function getDataFromApi(currency1, currency2) {
 
-    var url = `https://api.exchangeratesapi.io/latest?base=${currency1}&symbols=${currency2}`;
+    return new Promise((resolve, reject) => {
+        var url = `https://api.exchangeratesapi.io/latest?base=${currency1}&symbols=${currency2}`;
 
-    return fetch(url, { "method": "GET", }).then((result) => {
-        return result.json();
-    }).then(resultJson => {
-        console.log(resultJson);
-        return resultJson;
-    })
-        .catch((err) => {
-            console.log(err)
-        });
+        fetch(url, { "method": "GET", }).then((result) => {
+            return result.json();
+        }).then(resultJson => {
+            resolve(resultJson);
+        })
+            .catch((err) => {
+                console.log(err)
+                reject(err);
+            });
+    });
+
 }
 
-app.get('/', async function (req, res) {
-    // let json = await getDataFromApi("USD", "JPY");
-    // console.log(json);
+app.get('/:currencyPair', async function (req, res) {
+    let currencyPair = req.params.currencyPair;
+    let currency1 = currencyPair.slice(0, 3);
+    let currency2 = currencyPair.slice(3, 6);
 
-    // postDataToFirebase("USD", "SEK", "Hello");
-    // let data = await getDataFromFirebase("USD", "SEK").then(resp =>{
-    await getDataFromFirebase("USD", "SEK").then(resp => {
-        console.log(resp);
-    });
-    // });
-    // console.log(data);
-    //postDataToFirebase("USD","JPY", JSON.stringify(json));
-    //deleteData("USD", "JPY");
-    //getDataFromFirebase("USD", "SEK");
-    //putData("USD","SEK","prutt");
+    await getDataFromFirebase(currency1, currency2).then(resp => {
 
-    res.status(200).send("lol");
+        if (resp.date === getDate()) {
+            //console.log("From firebase", resp.json);
+            res.status(200).send(`From Firebase: ${resp.json}`);
+        } else if (resp === "No Document exists") {
+
+
+            let jsonFromAPI = getDataFromApi(currency1, currency2).then(result => {
+                postDataToFirebase(currency1, currency2, JSON.stringify(result));
+                res.status(200).send(`From API: ${JSON.stringify(result)}`);
+            }).catch((err) => {
+                console.log(err);
+            })
+        }
+
+    }).catch(err => console.log(err));
 });
-
-// app.get('/:currencyPair',(request, response) => {
-
-//     let currencyPair = req.params.currenyPair;
-//     let currency1 = currencyPair.slice(0, 3);
-//     let currency2 = currencyPair.slice(3, 6);
-//     let firebaseResponse = getDataFromFirebase(currency1, currency2);
-
-//     if (firebaseResponse == null) {
-//         getDataFromApi(currency1, currency2);
-//     }
-//     // if (doc.exists) {
-//     //     getDataFromFirebase();
-//     // } else {
-//     //     getDataFromApi();
-//     // }
-// })
 
 app.listen(3000, function () {
     console.log('Running on port 3000');
